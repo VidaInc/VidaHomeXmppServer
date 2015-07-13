@@ -22,6 +22,7 @@ public class ProcessorFactory {
     private static final String ACTION_REGISTER = PACKAGE + ".REGISTER";
     private static final String ACTION_ECHO = PACKAGE + ".ECHO";
     private static final String ACTION_MESSAGE = PACKAGE + ".MESSAGE";
+    private static final String ACTION_BEACON_DATA = PACKAGE + ".BEACON_DATA";
 
     public static PayloadProcessor getProcessor(String action) {
         if (action == null) {
@@ -33,7 +34,7 @@ public class ProcessorFactory {
         else if (action.equals(ACTION_ECHO)) {
             return new EchoProcessor();
         }
-        else if (action.equals(ACTION_MESSAGE)) {
+        else if (action.equals(ACTION_MESSAGE) || action.equals(ACTION_BEACON_DATA)) {
             return new MessageProcessor();
         }
         throw new IllegalStateException("Action " + action + " is unknown");
