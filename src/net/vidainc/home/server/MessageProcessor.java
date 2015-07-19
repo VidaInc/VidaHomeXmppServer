@@ -15,25 +15,35 @@
  */
 package net.vidainc.home.server;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
+import org.json.simple.JSONValue;
+
 /**
  * Handles an echo request.
  */
-public class MessageProcessor implements PayloadProcessor{
+public class MessageProcessor implements PayloadProcessor {
 
-    @Override
-    public void handleMessage(CcsMessage msg) {
-        PseudoDao dao = PseudoDao.getInstance();
-        CcsClient client = CcsClient.getInstance();
-        String msgId = dao.getUniqueMessageId();
-        String jsonRequest = 
-                CcsClient.createJsonMessage(
-                        msg.getFrom(), 
-                        msgId, 
-                        msg.getPayload(), 
-                        null, 
-                        null, // TTL (null -> default-TTL) 
-                        false);
-        client.send(jsonRequest);
-    }
+	@Override
+	public void handleMessage(CcsMessage msg) {
+		PseudoDao dao = PseudoDao.getInstance();
+		CcsClient client = CcsClient.getInstance();
+		String msgId = dao.getUniqueMessageId();
+		writeToFile(msg.getFrom(), msg.getPayload().get("message"));
+	}
+
+	private void writeToFile(String deviceRegId, String content) {
+		// content.replaceAll("\\\"", "\"");
+		try (Writer writer = new BufferedWriter((new OutputStreamWriter(
+				new FileOutputStream(deviceRegId, true))))) {
+			writer.write(content + "\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 }
